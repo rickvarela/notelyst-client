@@ -1,24 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import styled from 'styled-components'
+import { useEffect } from 'react'
+import { useNoteState } from './util/NoteState'
+
+import { InputArea } from './sections/InputArea'
+import { NotesMenu } from './sections/NotesMenu'
+
+const StyledApp = styled.div`
+  display: flex;
+  height: 100vh;
+  font-family: 'Nunito', sans-serif;
+`
 
 function App() {
+  const [editorState, setEditorState, noteState, noteActions] = useNoteState()
+
+  useEffect(() => {
+  }, [noteState, editorState])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <StyledApp>
+      <NotesMenu noteState={noteState} noteActions={noteActions}/>
+      <InputArea editorState={editorState} setEditorState={setEditorState} />
+    </StyledApp>
   );
 }
 
