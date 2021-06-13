@@ -6,12 +6,14 @@ const StyledInputArea = styled.div`
     background-color: none;
     flex: 1;
     display: flex;
+    width: ${({screenState}) => (screenState.isMobile && screenState.expandMenu ? '100%' : 0 )};
+    overflow: hidden;
     flex-direction: column;
 `
 
-export const InputArea = ({ editorState, setEditorState, handelExpand }) => {
+export const InputArea = ({ editorState, setEditorState, handelExpand, screenState }) => {
     return (
-        <StyledInputArea>
+        <StyledInputArea screenState={screenState}>
             <InputAreaHeader handelExpand={handelExpand} />
             <InputAreaEditor editorState={editorState} setEditorState={setEditorState} />
         </StyledInputArea>

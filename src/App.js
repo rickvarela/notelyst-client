@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNoteState } from './util/NoteState'
 
 import { InputArea } from './sections/InputArea'
@@ -14,16 +14,35 @@ const StyledApp = styled.div`
 
 function App() {
   const [editorState, setEditorState, noteState, noteActions] = useNoteState()
-  const [expandState, setExpandState] = useState(true)
+  const [screenState , setScreenState] = useState({
+    isMobile: false,
+    expandMenu: false
+  })
+
+  useEffect(() => {
+
+    const updateWindow = () => {
+      setScreenState(prevState => ({
+        ...prevState,
+        isMobile: window.innerWidth < 800
+      }))
+    }
+
+    window.addEventListener('resize', updateWindow)
+    return () => window.removeEventListener('resize', updateWindow)
+  }, [])
 
   const handelExpand = () => {
-    setExpandState(!expandState)
+    setScreenState(prevState => ({
+      ...prevState,
+      expandMenu: !prevState.expandMenu
+    }))
   }
 
   return (
     <StyledApp>
-      <NotesMenu noteState={noteState} noteActions={noteActions} expandState={expandState} />
-      <InputArea editorState={editorState} setEditorState={setEditorState} handelExpand={handelExpand} />
+      <NotesMenu noteState={noteState} noteActions={noteActions} handelExpand={handelExpand} screenState={screenState} />
+      <InputArea editorState={editorState} setEditorState={setEditorState} handelExpand={handelExpand} screenState={screenState} />
     </StyledApp>
   );
 }

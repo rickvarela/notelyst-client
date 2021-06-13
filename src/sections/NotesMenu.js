@@ -3,17 +3,17 @@ import { convertToRaw } from 'draft-js'
 
 const StyledNotesMenu = styled.div`
     background-color: #E7EBEE;
-    width: ${(props) => (props.expandState ? '400px' : 0)};
+    width: ${({screenState}) => (screenState.expandMenu ? 0 : screenState.isMobile ? '100%' : '400px')};
     overflow-x: hidden;
-    opacity: ${(props) => (props.expandState ? '100%' : '0%')};
+    opacity: ${({screenState}) => (screenState.expandMenu ? 0 : '100%')};
     transition: opacity 700ms;
 `
 
-export const NotesMenu = ({ noteState, noteActions, expandState }) => {
+export const NotesMenu = ({ noteState, noteActions, handelExpand, screenState }) => {
 
     return (
-        <StyledNotesMenu expandState={expandState}>
-            <NotesMenuHeader noteActions={noteActions}/>
+        <StyledNotesMenu screenState={screenState}>
+            <NotesMenuHeader noteActions={noteActions} handelExpand={handelExpand} screenState={screenState}/>
             <NotesList noteState={noteState} noteActions={noteActions}/>
         </StyledNotesMenu>
     )
@@ -27,11 +27,14 @@ const StyledNotesHeader = styled.div`
     padding: 5px;
 `
 
-const NotesMenuHeader = ({ noteActions }) => {
+const NotesMenuHeader = ({ noteActions, handelExpand, screenState }) => {
     return (
         <StyledNotesHeader>
             <span>Notes List</span>
-            <button onClick={noteActions.createNote}>NEW NOTE</button>
+            <div>
+                {screenState.isMobile && <button onClick={handelExpand}>CLOSE MENU</button>}
+                <button onClick={noteActions.createNote}>NEW NOTE</button>
+            </div>
         </StyledNotesHeader>
     )
 }
@@ -59,10 +62,11 @@ const StyledNoteItem = styled.div`
     }
 `
 
-const NoteItem = ({ note, noteActions, index }) => {
+const NoteItem = ({ note, noteActions, index, handelExpand }) => {
 
     const handelClick = () => {
         noteActions.changeCurrentNote(note._id)
+        handelExpand()
     }
 
     return (
