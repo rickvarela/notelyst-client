@@ -9,10 +9,10 @@ const StyledInputArea = styled.div`
     flex-direction: column;
 `
 
-export const InputArea = ({ editorState, setEditorState }) => {
+export const InputArea = ({ editorState, setEditorState, handelExpand }) => {
     return (
         <StyledInputArea>
-            <InputAreaHeader />
+            <InputAreaHeader handelExpand={handelExpand} />
             <InputAreaEditor editorState={editorState} setEditorState={setEditorState} />
         </StyledInputArea>
     )
@@ -22,12 +22,16 @@ const StyledInputAreaHeader = styled.div`
     background-color: #324A5F;
     color: white;
     padding: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 `
 
-const InputAreaHeader = () => {
+const InputAreaHeader = ({ handelExpand }) => {
     return (
         <StyledInputAreaHeader>
             Editor Area
+            <button onClick={handelExpand} >EXPAND MENU</button>
         </StyledInputAreaHeader>
     )
 }

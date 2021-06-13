@@ -3,13 +3,16 @@ import { convertToRaw } from 'draft-js'
 
 const StyledNotesMenu = styled.div`
     background-color: #E7EBEE;
-    width: 400px;
+    width: ${(props) => (props.expandState ? '400px' : 0)};
+    overflow-x: hidden;
+    opacity: ${(props) => (props.expandState ? '100%' : '0%')};
+    transition: opacity 700ms;
 `
 
-export const NotesMenu = ({ noteState, noteActions }) => {
+export const NotesMenu = ({ noteState, noteActions, expandState }) => {
 
     return (
-        <StyledNotesMenu>
+        <StyledNotesMenu expandState={expandState}>
             <NotesMenuHeader noteActions={noteActions}/>
             <NotesList noteState={noteState} noteActions={noteActions}/>
         </StyledNotesMenu>
