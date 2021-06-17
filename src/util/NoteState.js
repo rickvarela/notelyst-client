@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useRef } from "react";
 import { EditorState } from 'draft-js'
 import { nanoid } from 'nanoid'
 
@@ -38,6 +38,9 @@ const noteReducer = (state, action) => {
 }
 
 export const useNoteState = (state, action) => {
+
+    const isNewNote = useRef(true)
+
     let init_id = nanoid()
     const [noteList, dispatchNoteList] = useReducer( noteReducer, {
         noteUnderEdit: init_id,
@@ -51,6 +54,7 @@ export const useNoteState = (state, action) => {
     })
 
     const handelEditorChange = (stateToUpdate) => {
+        isNewNote.current = false
         dispatchNoteList({
             type: 'UPDATE_CURRENT_NOTE_STATE',
             payload: stateToUpdate
@@ -61,10 +65,14 @@ export const useNoteState = (state, action) => {
     const getCurrentEditorState = () => {
         let noteState = noteList.data.filter(note => note._id === noteList.noteUnderEdit)[0].editorState
         let selectState = noteState.getSelection()
-        return EditorState.forceSelection(
-            noteState,
-            selectState
-        )
+        console.log(isNewNote.current)
+        if (isNewNote.current) {
+            return EditorState.forceSelection(
+                noteState,
+                selectState
+            )
+        }
+        return noteState
     }
 
     const handelCreateNote = () => {
@@ -75,16 +83,16 @@ export const useNoteState = (state, action) => {
             payload: {
                 newNote: {
                     _id: newNote_id,
-                    editorState: EditorState.moveFocusToEnd(
-                         EditorState.createEmpty()
-                    )
+                    editorState: EditorState.createEmpty()
                 },
                 newNote_id: newNote_id
             }
         })
+        isNewNote.current = true
     }
 
     const handelChangeCurrentNote = note_id => {
+        isNewNote.current = true
         dispatchNoteList({
             type: 'CHANGE_CURRENT_NOTE',
             payload: note_id
