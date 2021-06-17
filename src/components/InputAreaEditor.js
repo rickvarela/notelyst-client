@@ -5,7 +5,7 @@ import { useRef } from "react";
 const StyledInputAreaEdior = styled.div`
     padding: 40px;
     flex: 1;
-    overflow-y: scroll
+    overflow-y: auto;
 `
 
 const StyledEditorWrapper = styled.div`
@@ -15,12 +15,10 @@ const StyledEditorWrapper = styled.div`
 
 export const InputAreaEditor = ({ editorState, setEditorState }) => {
     const editorRef = useRef()
-    const handelClick = () => {
-    }
-
+    
     return (
         <StyledInputAreaEdior>
-            <StyledEditorWrapper onClick={handelClick}>
+            <StyledEditorWrapper>
                 <Editor 
                     editorState={editorState} 
                     placeholder='Enter some text...'

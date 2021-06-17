@@ -7,6 +7,8 @@ const StyledNotesMenu = styled.div`
     overflow-x: hidden;
     opacity: ${({screenState}) => (screenState.expandMenu ? 0 : '100%')};
     transition: opacity 700ms;
+    display: flex;
+    flex-direction: column;
 `
 
 export const NotesMenu = ({ noteState, noteActions, handelExpand, screenState }) => {
@@ -39,13 +41,17 @@ const NotesMenuHeader = ({ noteActions, handelExpand, screenState }) => {
     )
 }
 
+const StyledNotesList = styled.div`
+    overflow-y: auto;
+`
+
 const NotesList = ({ noteState, noteActions, handelExpand, screenState }) => {
     return (
-        <div>
+        <StyledNotesList>
             {noteState.map((note, index) =>
                 <NoteItem key={note._id} note={note} noteActions={noteActions} handelExpand={handelExpand} screenState={screenState} index={index} />
             )}
-        </div>
+        </StyledNotesList>
     )
 }
 
