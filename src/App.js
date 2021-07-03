@@ -1,48 +1,34 @@
-import styled from 'styled-components'
-import { useState, useEffect } from 'react'
-import { useNoteState } from './util/NoteState'
+import { NoteLystApp } from './sections/NoteLystApp';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { InputArea } from './sections/InputArea'
-import { NotesMenu } from './sections/NotesMenu'
+import { SignUp } from './sections/SignUp';
+import { Login } from './sections/Login';
 
 const StyledApp = styled.div`
   display: flex;
   flex-direction: row;
   height: 100vh;
+  width: 100vw;
   font-family: 'Nunito', sans-serif;
-`
+`;
 
 function App() {
-  const [editorState, setEditorState, noteState, noteActions] = useNoteState()
-  const [screenState , setScreenState] = useState({
-    isMobile: false,
-    expandMenu: false
-  })
-
-  useEffect(() => {
-
-    const updateWindow = () => {
-      setScreenState(prevState => ({
-        ...prevState,
-        isMobile: window.innerWidth < 800
-      }))
-    }
-
-    window.addEventListener('resize', updateWindow)
-    return () => window.removeEventListener('resize', updateWindow)
-  }, [])
-
-  const handelExpand = () => {
-    setScreenState(prevState => ({
-      ...prevState,
-      expandMenu: !prevState.expandMenu
-    }))
-  }
-
   return (
     <StyledApp>
-      <NotesMenu noteState={noteState} noteActions={noteActions} handelExpand={handelExpand} screenState={screenState} />
-      <InputArea editorState={editorState} setEditorState={setEditorState} handelExpand={handelExpand} screenState={screenState} />
+      <Router>
+        <Switch>
+          <Route path='/' exact>
+            <NoteLystApp />
+          </Route>
+          <Route path='/signup'>
+            <SignUp />
+          </Route>
+          <Route path='/login'>
+            <Login />
+          </Route>
+        </Switch>
+      </Router>
     </StyledApp>
   );
 }

@@ -1,2 +1,6 @@
 @import-sanitize;
 @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+
+h2 {
+    margin: 0;
+}
