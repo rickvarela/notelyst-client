@@ -82,12 +82,11 @@ const WelcomeText = styled.div`
 
 const InputAreaHeader = ({ handelExpand, formActions }) => {
   const { authUser, actions } = useAuth();
-
   return (
     <StyledInputAreaHeader>
       <StyledButton onClick={handelExpand}>EXPAND MENU</StyledButton>
       <StyledNav>
-        {authUser.authUser ? (
+        {authUser ? (
           <>
             <WelcomeText>{`Welcome, ${authUser.username}`}</WelcomeText>
             <StyledButton onClick={actions.signOut}>SIGN OUT</StyledButton>

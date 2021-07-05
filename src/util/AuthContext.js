@@ -3,27 +3,28 @@ import { createContext, useContext, useState } from 'react';
 const Context = createContext();
 
 export const Provider = ({ children }) => {
-  const [authUser, setAuthUser] = useState({
+  const [authState, setAuthState] = useState({
     isLoaded: false,
-    authUser: false,
+    authUser: null,
   });
 
   const checkToken = () => {
     fetch('/api/checktoken')
       .then((res) => res.json())
       .then((data) => {
-        setAuthUser({
+        setAuthState({
           isLoaded: true,
-          ...data,
+          ...data
         });
       })
       .catch(() => {
-        setAuthUser({ isLoaded: true });
+        setAuthState({ isLoaded: true });
       });
   };
 
   const value = {
-    authUser,
+    authUser: authState.authUser,
+    isLoaded: authState.isLoaded,
     actions: {
       checkToken,
       signUp,
@@ -61,7 +62,7 @@ export const Provider = ({ children }) => {
       method: 'POST',
       credentials: 'include',
     }).then(() => {
-      setAuthUser((prevState) => ({
+      setAuthState((prevState) => ({
         ...prevState,
         authUser: null,
       }));

@@ -18,11 +18,10 @@ export const NoteLystApp = () => {
     isMobile: window.innerWidth < 800,
     expandMenu: false,
   });
-  const { authUser, actions } = useAuth();
+  const { isLoaded, actions } = useAuth();
 
   useEffect(() => {
     actions.checkToken();
-
     const updateWindow = () => {
       setScreenState((prevState) => ({
         ...prevState,
@@ -41,7 +40,7 @@ export const NoteLystApp = () => {
     }));
   };
 
-  return authUser.isLoaded ? (
+  return isLoaded ? (
     <StyledApp>
       <NotesMenu
         noteState={noteState}
