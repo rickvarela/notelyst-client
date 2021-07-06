@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { convertToRaw } from 'draft-js';
+import CloseX from '../assets/svg/close-x.svg';
 
 const StyledNoteItem = styled.div`
   background-color: ${(props) => (props.isCurrent ? '#A1B9CE' : 'none')};
@@ -14,8 +15,13 @@ const StyledNoteItem = styled.div`
     background-color: ${(props) => (props.isCurrent ? 'none' : '#CED6DF')};
   }
 
-  > button {
-    width: 100px;
+  img {
+    opacity: 0;
+    height: 15px;
+  }
+
+  &:hover img {
+    opacity: 1;
   }
 `;
 
@@ -26,6 +32,7 @@ const StyledNoteTextWrapper = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
+  padding-left: 5px;
 `;
 
 const StyledNoteText = styled.div`
@@ -37,6 +44,10 @@ const StyledNoteText = styled.div`
   min-height: 1.5em;
 `;
 
+const StyledIconWrapper = styled.div`
+  width: 20px;
+`;
+
 export const NoteItem = ({
   note,
   noteActions,
@@ -44,12 +55,15 @@ export const NoteItem = ({
   handelExpand,
   screenState,
 }) => {
-  const insertContent = () => {
+  const insertContent = (handelClick) => {
     let noteContent = convertToRaw(note.editorState.getCurrentContent()).blocks;
     let noteText = '';
-
     if (noteContent.length <= 1 && noteContent[0].text === '') {
-      return <StyledNoteTextWrapper><StyledNoteText bold>New Note...</StyledNoteText></StyledNoteTextWrapper>;
+      return (
+        <StyledNoteTextWrapper onClick={handelClick}>
+          <StyledNoteText bold>New Note...</StyledNoteText>
+        </StyledNoteTextWrapper>
+      );
     }
     for (let line of noteContent.slice(1)) {
       noteText += ` ${line.text}`;
@@ -57,7 +71,7 @@ export const NoteItem = ({
     }
 
     return (
-      <StyledNoteTextWrapper>
+      <StyledNoteTextWrapper onClick={handelClick}>
         <StyledNoteText bold>{noteContent[0].text}</StyledNoteText>
         {noteContent[1] && <StyledNoteText>{noteText}</StyledNoteText>}
       </StyledNoteTextWrapper>
@@ -71,12 +85,16 @@ export const NoteItem = ({
     }
   };
 
+  const handelDelete = () => {
+    noteActions.deleteNote(note._id);
+  };
+
   return (
-    <StyledNoteItem
-      onClick={handelClick}
-      isCurrent={noteActions.isCurrentNote(note._id)}
-    >
-      {insertContent()}
+    <StyledNoteItem isCurrent={noteActions.isCurrentNote(note._id)}>
+      <StyledIconWrapper>
+        <img onClick={handelDelete} src={CloseX} />
+      </StyledIconWrapper>
+      {insertContent(handelClick)}
     </StyledNoteItem>
   );
 };

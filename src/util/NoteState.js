@@ -31,6 +31,11 @@ const noteReducer = (state, action) => {
           return note;
         }),
       };
+    case 'DELETE_NOTE':
+      return {
+        ...state,
+        data: state.data.filter((note) => note._id !== action.payload),
+      };
     default:
       return null;
   }
@@ -94,6 +99,17 @@ export const useNoteState = (state, action) => {
     });
   };
 
+  const handelDeleteNote = (note_id) => {
+    if (noteList.data.length === 1) return;
+    if (note_id === noteList.noteUnderEdit) {
+      handelChangeCurrentNote(noteList.data[0]._id);
+    }
+    dispatchNoteList({
+      type: 'DELETE_NOTE',
+      payload: note_id,
+    });
+  };
+
   const isCurrentNote = (unsureNote_id) => {
     if (unsureNote_id === noteList.noteUnderEdit) return true;
     return false;
@@ -106,6 +122,7 @@ export const useNoteState = (state, action) => {
   const noteActions = {
     createNote: handelCreateNote,
     changeCurrentNote: handelChangeCurrentNote,
+    deleteNote: handelDeleteNote,
     isCurrentNote,
     isNoteFocus,
   };
