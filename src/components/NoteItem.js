@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { convertToRaw } from 'draft-js';
 import CloseX from '../assets/svg/close-x.svg';
+import { Node } from 'slate';
 
 const StyledNoteItem = styled.div`
   background-color: ${(props) => (props.isCurrent ? '#A1B9CE' : 'none')};
@@ -48,34 +48,15 @@ const StyledIconWrapper = styled.div`
   width: 20px;
 `;
 
-export const NoteItem = ({
-  note,
-  noteActions,
-  index,
-  handelExpand,
-  screenState,
-}) => {
-  const insertContent = (handelClick) => {
-    let noteContent = convertToRaw(note.editorState.getCurrentContent()).blocks;
-    let noteText = '';
-    if (noteContent.length <= 1 && noteContent[0].text === '') {
-      return (
-        <StyledNoteTextWrapper onClick={handelClick}>
-          <StyledNoteText bold>New Note...</StyledNoteText>
-        </StyledNoteTextWrapper>
-      );
-    }
-    for (let line of noteContent.slice(1)) {
-      noteText += ` ${line.text}`;
-      if (noteText.length > 50) break;
-    }
+export const NoteItem = ({ note, noteActions, handelExpand, screenState }) => {
+  let noteContent = note.editorState;
 
-    return (
-      <StyledNoteTextWrapper onClick={handelClick}>
-        <StyledNoteText bold>{noteContent[0].text}</StyledNoteText>
-        {noteContent[1] && <StyledNoteText>{noteText}</StyledNoteText>}
-      </StyledNoteTextWrapper>
-    );
+  const getNoteText = () => {
+    return noteContent
+      .slice(1)
+      .filter((n) => Node.string(n) !== '')
+      .map((n) => Node.string(n).trim())
+      .join(' ');
   };
 
   const handelClick = () => {
@@ -94,7 +75,16 @@ export const NoteItem = ({
       <StyledIconWrapper>
         <img onClick={handelDelete} src={CloseX} />
       </StyledIconWrapper>
-      {insertContent(handelClick)}
+      <StyledNoteTextWrapper onClick={handelClick}>
+        <StyledNoteText bold>
+          {noteContent.length <= 1 && Node.string(noteContent[0]) === ''
+            ? 'New note..'
+            : Node.string(noteContent[0])}
+        </StyledNoteText>
+        {noteContent.length > 1 && (
+          <StyledNoteText>{getNoteText()}</StyledNoteText>
+        )}
+      </StyledNoteTextWrapper>
     </StyledNoteItem>
   );
 };

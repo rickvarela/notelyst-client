@@ -1,5 +1,4 @@
-import { useReducer, useRef } from 'react';
-import { EditorState } from 'draft-js';
+import { useReducer } from 'react';
 import { nanoid } from 'nanoid';
 
 const noteReducer = (state, action) => {
@@ -7,25 +6,25 @@ const noteReducer = (state, action) => {
     case 'CHANGE_CURRENT_NOTE':
       return {
         ...state,
-        newNoteFocus: true,
+        isNewNote: true,
         noteUnderEdit: action.payload,
       };
     case 'CREATE_NOTE':
       return {
         ...state,
-        newNoteFocus: true,
+        isNewNote: true,
         noteUnderEdit: action.payload.newNote_id,
         data: [...state.data, action.payload.newNote],
       };
     case 'UPDATE_CURRENT_NOTE_STATE':
       return {
         ...state,
-        newNoteFocus: false,
+        isNewNote: false,
         data: state.data.map((note) => {
           if (note._id === state.noteUnderEdit) {
             return {
               ...note,
-              editorState: action.payload,
+              ...action.payload,
             };
           }
           return note;
@@ -42,22 +41,25 @@ const noteReducer = (state, action) => {
 };
 
 export const useNoteState = (state, action) => {
-  const isNewNote = useRef(true);
-
   let init_id = nanoid();
   const [noteList, dispatchNoteList] = useReducer(noteReducer, {
     noteUnderEdit: init_id,
-    newNoteFocus: true,
+    isNewNote: true,
     data: [
       {
         _id: init_id,
-        editorState: EditorState.createEmpty(),
+        editorState: [
+          {
+            type: 'paragraph',
+            children: [{ text: '' }],
+          },
+        ],
+        selection: null,
       },
     ],
   });
 
   const handelEditorChange = (stateToUpdate) => {
-    isNewNote.current = false;
     dispatchNoteList({
       type: 'UPDATE_CURRENT_NOTE_STATE',
       payload: stateToUpdate,
@@ -67,12 +69,12 @@ export const useNoteState = (state, action) => {
   const getCurrentEditorState = () => {
     let noteState = noteList.data.filter(
       (note) => note._id === noteList.noteUnderEdit
-    )[0].editorState;
-    let selectState = noteState.getSelection();
-    if (isNewNote.current) {
-      return EditorState.forceSelection(noteState, selectState);
-    }
-    return noteState;
+    )[0];
+
+    return {
+      isNewNote: noteList.isNewNote,
+      ...noteState,
+    };
   };
 
   const handelCreateNote = () => {
@@ -83,16 +85,29 @@ export const useNoteState = (state, action) => {
       payload: {
         newNote: {
           _id: newNote_id,
-          editorState: EditorState.createEmpty(),
+          editorState: [
+            {
+              type: 'paragraph',
+              children: [{ text: '' }],
+            },
+          ],
+          selection: {
+            anchor: {
+              path: [0, 0],
+              offset: 0,
+            },
+            focus: {
+              path: [0, 0],
+              offset: 0,
+            },
+          },
         },
         newNote_id: newNote_id,
       },
     });
-    isNewNote.current = true;
   };
 
   const handelChangeCurrentNote = (note_id) => {
-    isNewNote.current = true;
     dispatchNoteList({
       type: 'CHANGE_CURRENT_NOTE',
       payload: note_id,
@@ -115,16 +130,11 @@ export const useNoteState = (state, action) => {
     return false;
   };
 
-  const isNoteFocus = () => {
-    return noteList.newNoteFocus;
-  };
-
   const noteActions = {
     createNote: handelCreateNote,
     changeCurrentNote: handelChangeCurrentNote,
     deleteNote: handelDeleteNote,
     isCurrentNote,
-    isNoteFocus,
   };
 
   return [

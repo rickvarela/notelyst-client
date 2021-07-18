@@ -1,7 +1,7 @@
-import { NoteLystApp } from './sections/NoteLystApp';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { NoteLystApp } from './sections/NoteLystApp';
 import { SignUp } from './sections/SignUp';
 import { Login } from './sections/Login';
 

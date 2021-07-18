@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import { Editor } from 'draft-js';
-import { useRef } from 'react';
+import { useEffect, useMemo } from 'react';
+import { Slate, Editable, withReact, ReactEditor } from 'slate-react';
+import { createEditor, Transforms } from 'slate';
 
 const StyledInputAreaEdior = styled.div`
   padding: 40px;
@@ -14,17 +15,42 @@ const StyledEditorWrapper = styled.div`
 `;
 
 export const InputAreaEditor = ({ editorState, setEditorState }) => {
-  const editorRef = useRef();
+  const editor = useMemo(() => withReact(createEditor()), []);
+
+  useEffect(() => {
+    if (editorState.isNewNote) {
+      if (editorState.selection)
+        Transforms.select(editor, editorState.selection);
+      ReactEditor.focus(editor);
+    }
+  }, [editorState]);
+
+  const handelEditorChange = (newEditorState) => {
+    setEditorState({
+      editorState: newEditorState,
+    });
+  };
+
+  const handelBlur = () => {
+    setEditorState({
+      selection: editor.selection,
+    });
+  };
 
   return (
     <StyledInputAreaEdior>
       <StyledEditorWrapper>
-        <Editor
-          editorState={editorState}
-          placeholder='Enter some text...'
-          onChange={setEditorState}
-          ref={editorRef}
-        />
+        <Slate
+          editor={editor}
+          value={editorState.editorState}
+          onChange={handelEditorChange}
+        >
+          <Editable
+            placeholder='Enter some text...'
+            autoFocus
+            onBlur={handelBlur}
+          />
+        </Slate>
       </StyledEditorWrapper>
     </StyledInputAreaEdior>
   );
